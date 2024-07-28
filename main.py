@@ -8,7 +8,6 @@ from wechatpy.client.api import WeChatMessage
 import requests
 import os
 
-
 # 哪天在一起的
 start_date = os.environ['START_DATE']
 # 和风天气key
@@ -28,7 +27,6 @@ template_id_night = os.environ["TEMPLATE_ID_NIGHT"]
 name = os.environ['NAME']
 # 城市
 city = os.environ['CITY']
-
 # 获取本地时区
 local_tz = pytz.timezone('Asia/Shanghai')
 
@@ -49,7 +47,6 @@ params["location"] = city_id
 # 根据城市地理位置获取当前实时天气
 url = "https://devapi.qweather.com/v7/weather/now"
 realtime_json = json.loads(requests.get(url, params, headers=headers).text)
-print(realtime_json)
 # 实时天气状况
 realtime = realtime_json["now"]
 # 当前温度 拼接 当前天气
@@ -79,7 +76,7 @@ day_forecast_today_windDirDay = day_forecast_today["windDirDay"]
 # 夜间风向
 day_forecast_today_windDirNight = day_forecast_today["windDirNight"]
 # 风力等级
-day_forecast_today_windScaleDay = day_forecast_today["windScaleDay"]
+day_forecast_today_windScaleDay = day_forecast_today["windScaleDay"] + "级"
 # -----------------------今天天气状况-----------------------------
 
 
@@ -103,7 +100,7 @@ day_forecast_tomorrow_windDirDay = day_forecast_today["windDirDay"]
 # 夜间风向
 day_forecast_tomorrow_windDirNight = day_forecast_today["windDirNight"]
 # 风力等级
-day_forecast_tomorrow_windScaleDay = day_forecast_today["windScaleDay"]
+day_forecast_tomorrow_windScaleDay = day_forecast_today["windScaleDay"] + "级"
 # -----------------------明天天气状况-----------------------------
 
 
