@@ -31,10 +31,6 @@ city = os.environ['CITY']
 
 # 获取本地时区
 local_tz = pytz.timezone('Asia/Shanghai')
-# 当前时间
-today = datetime.now(local_tz)
-# YYYY年MM月DD日
-today_date = today.strftime("%Y年%m月%d日")
 
 # 构建请求体
 headers = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -53,10 +49,11 @@ params["location"] = city_id
 # 根据城市地理位置获取当前实时天气
 url = "https://devapi.qweather.com/v7/weather/now"
 realtime_json = json.loads(requests.get(url, params, headers=headers).text)
+print(realtime_json)
 # 实时天气状况
 realtime = realtime_json["now"]
 # 当前温度 拼接 当前天气
-now_temperature = realtime["temp"] + "℃" + realtime["text"]
+now_temperature = realtime["temp"] + "°C " + realtime["text"]
 
 # 根据城市地理位置获取3天天气状况
 url = "https://devapi.qweather.com/v7/weather/3d"
@@ -72,9 +69,9 @@ day_forecast_today_sunset = day_forecast_today["sunset"]
 # 天气
 day_forecast_today_weather = day_forecast_today["textDay"]
 # 最低温度
-day_forecast_today_temperature_min = day_forecast_today["tempMin"]+"℃"
+day_forecast_today_temperature_min = day_forecast_today["tempMin"] + "°C"
 # 最高温度
-day_forecast_today_temperature_max = day_forecast_today["tempMax"]+"℃"
+day_forecast_today_temperature_max = day_forecast_today["tempMax"] + "°C"
 # 夜间天气
 day_forecast_today_night = day_forecast_today["textNight"]
 # 白天风向
@@ -96,9 +93,9 @@ day_forecast_tomorrow_sunrise = day_forecast_tomorrow["sunrise"]
 # 日落时间
 day_forecast_tomorrow_sunset = day_forecast_tomorrow["sunset"]
 # 最低温度
-day_forecast_tomorrow_temperature_min = day_forecast_tomorrow["tempMin"] + "℃"
+day_forecast_tomorrow_temperature_min = day_forecast_tomorrow["tempMin"] + "°C"
 # 最高温度
-day_forecast_tomorrow_temperature_max = day_forecast_tomorrow["tempMax"] + "℃"
+day_forecast_tomorrow_temperature_max = day_forecast_tomorrow["tempMax"] + "°C"
 # 夜间天气
 day_forecast_tomorrow_night = day_forecast_today["textNight"]
 # 白天风向
@@ -116,10 +113,16 @@ day_forecast_T2 = day_forecast_json["daily"][2]
 # 天气
 day_forecast_T2_textDay = day_forecast_T2["textDay"]
 # 最低温度
-day_forecast_T2_temperature_min = day_forecast_T2["tempMin"] + "℃"
+day_forecast_T2_temperature_min = day_forecast_T2["tempMin"] + "°C"
 # 最高温度
-day_forecast_T2_temperature_max = day_forecast_T2["tempMax"] + "℃"
+day_forecast_T2_temperature_max = day_forecast_T2["tempMax"] + "°C"
 # -----------------------后天天气状况-----------------------------
+
+
+# 获取当前时间
+def get_datetime_now():
+    now = datetime.now(local_tz)
+    return now
 
 
 # 距离春节还有多少天
@@ -129,14 +132,14 @@ def days_until_spring_festival(year=None):
     如果未提供年份，则默认为当前年份。
     """
     if year is None:
-        year = datetime.now().year  # 获取当前年份
+        year = get_datetime_now().year  # 获取当前年份
 
     # 获取当年春节的日期（农历正月初一转换为公历）
     spring_festival_lunar = LunarDate(year, 1, 1)
     spring_festival_solar = spring_festival_lunar.toSolarDate()
 
     # 获取当前日期
-    today = datetime.now().date()
+    today = get_datetime_now().date()
 
     # 计算差值，注意需要将日期转换为同类型的对象才能相减
     days_until = (spring_festival_solar - today).days
@@ -150,16 +153,18 @@ def days_until_spring_festival(year=None):
 
 # 在一起多天计算
 def get_count():
+    today = get_datetime_now().today()
     delta = today - datetime.strptime(start_date, "%Y-%m-%d")
-    return delta.days+1
+    return delta.days + 1
 
 
 # 生日计算
 def get_birthday():
-    next = datetime.strptime(str(date.today().year) + "-" + birthday, "%Y-%m-%d")
-    if next < datetime.now():
-      next = next.replace(year=next.year + 1)
-    return (next - today).days
+    today = get_datetime_now().today()
+    birthday_next = datetime.strptime(str(today.year) + "-" + birthday, "%Y-%m-%d")
+    if birthday_next.date() < get_datetime_now().date():
+        birthday_next = birthday_next.replace(year=birthday_next.year + 1)
+    return (birthday_next - today).days + 1
 
 
 # 彩虹屁接口
@@ -168,13 +173,12 @@ def get_words():
     if words.status_code != 200:
         return get_words()
     text = words.json()['data']['text']
-
     # 按照20个字符分割字符串
     chunk_size = 20
     split_notes = [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
     # 分配note N 如果split_notes元素少于5，则用空字符串填充
-    [note1, note2, note3, note4, note5] = (split_notes + [""] * 5)[:5]
-    return note1, note2, note3, note4, note5
+    [b1, b2, b3, b4, b5] = (split_notes + [""] * 5)[:5]
+    return b1, b2, b3, b4, b5
 
 
 if __name__ == '__main__':
@@ -187,10 +191,8 @@ if __name__ == '__main__':
     # 获取彩虹屁
     note1, note2, note3, note4, note5 = get_words()
 
-    # 获取当前UTC时间
-    now_utc = datetime.utcnow()
     # 转换为北京时间（UTC+8）
-    beijing_time = now_utc + timedelta(hours=8)
+    beijing_time = get_datetime_now()
     # 获取当前小时数
     hour_of_day = beijing_time.hour
     # 默认发当天
@@ -203,15 +205,15 @@ if __name__ == '__main__':
     print("当前时间：" + str(beijing_time)+"即将推送："+strDay+"信息")
 
     data = {"name": {"value": name},
-            "today": {"value": today_date},
+            "today": {"value": get_datetime_now().strftime("%Y年%m月%d日")},
             "city": {"value": city},
             "weather": {"value": globals()[f'day_forecast_{strDay}_weather']},
             "now_temperature": {"value": now_temperature},
             "min_temperature": {"value": globals()[f'day_forecast_{strDay}_temperature_min']},
             "max_temperature": {"value": globals()[f'day_forecast_{strDay}_temperature_max']},
-            "love_date": {"value": get_count()},
-            "birthday": {"value": get_birthday()},
-            "diff_date1": {"value": days_until_spring_festival()},
+            "love_date": {"value": f'{str(get_count())}天'},
+            "birthday": {"value":  f'{str(get_birthday())}天'},
+            "diff_date1": {"value": f'{days_until_spring_festival()}天'},
             "sunrise": {"value": globals()[f'day_forecast_{strDay}_sunrise']},
             "sunset": {"value": globals()[f'day_forecast_{strDay}_sunset']},
             "textNight": {"value": globals()[f'day_forecast_{strDay}_night']},
