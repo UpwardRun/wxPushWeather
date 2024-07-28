@@ -47,7 +47,6 @@ url = "https://geoapi.qweather.com/v2/city/lookup"
 resp_json = json.loads(requests.get(url, params, headers=headers).text)
 city_id = resp_json["location"][0]["id"]
 params["location"] = city_id
-print(resp_json)
 
 
 # 根据城市地理位置获取当前实时天气
