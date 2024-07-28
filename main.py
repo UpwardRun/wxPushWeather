@@ -223,7 +223,7 @@ if __name__ == '__main__':
             "note4": {"value": note4},
             "note5": {"value": note5}
             }
-    # print(data)
+    print(data)
 
     # 拆分user_ids
     user_ids = user_ids.split(";")
