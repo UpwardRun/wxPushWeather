@@ -1,12 +1,11 @@
 import json
+import pytz
 from datetime import date
 from datetime import datetime, timedelta
-
 from lunardate import LunarDate
 from wechatpy import WeChatClient
 from wechatpy.client.api import WeChatMessage
 import requests
-import os
 
 
 # 哪天在一起的
@@ -29,11 +28,12 @@ name = os.environ['NAME']
 # 城市
 city = os.environ['CITY']
 
+# 获取本地时区
+local_tz = pytz.timezone('Asia/Shanghai')
 # 当前时间
-today = datetime.now()
+today = datetime.now(local_tz)
 # YYYY年MM月DD日
 today_date = today.strftime("%Y年%m月%d日")
-
 
 # 构建请求体
 headers = {"Content-Type": "application/x-www-form-urlencoded"}
