@@ -161,7 +161,7 @@ def get_birthday():
     birthday_next = datetime.strptime(str(today.year) + "-" + birthday, "%Y-%m-%d")
     if birthday_next.date() < get_datetime_now().date():
         birthday_next = birthday_next.replace(year=birthday_next.year + 1)
-    return (birthday_next - today).days + 1
+    return (birthday_next - today).days
 
 
 # 彩虹屁接口
