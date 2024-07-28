@@ -6,6 +6,7 @@ from lunardate import LunarDate
 from wechatpy import WeChatClient
 from wechatpy.client.api import WeChatMessage
 import requests
+import os
 
 
 # 哪天在一起的
@@ -128,14 +129,14 @@ def days_until_spring_festival(year=None):
     如果未提供年份，则默认为当前年份。
     """
     if year is None:
-        year = datetime.now().year  # 获取当前年份
+        year = datetime.now(local_tz).year  # 获取当前年份
 
     # 获取当年春节的日期（农历正月初一转换为公历）
     spring_festival_lunar = LunarDate(year, 1, 1)
     spring_festival_solar = spring_festival_lunar.toSolarDate()
 
     # 获取当前日期
-    today = datetime.now().date()
+    today = datetime.now(local_tz).date()
 
     # 计算差值，注意需要将日期转换为同类型的对象才能相减
     days_until = (spring_festival_solar - today).days
@@ -156,7 +157,7 @@ def get_count():
 # 生日计算
 def get_birthday():
     next = datetime.strptime(str(date.today().year) + "-" + birthday, "%Y-%m-%d")
-    if next < datetime.now():
+    if next < datetime.now(local_tz):
       next = next.replace(year=next.year + 1)
     return (next - today).days
 
